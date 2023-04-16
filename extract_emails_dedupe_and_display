@@ -1,0 +1,55 @@
+javascript:(function() {
+  /* Function to extract email addresses from a string */
+  function extractEmails(text) {
+    return text.match(/[\w.-]+@[\w-]+\.[\w.-]+/g) || [];
+  }
+
+  /* Function to remove duplicates from an array */
+  function uniqueArray(array) {
+    return Array.from(new Set(array));
+  }
+
+  /* Function to create the email list panel */
+  function createPanel(emailList) {
+    const panel = document.createElement("div");
+    panel.style.cssText = "position:fixed; top:10%; right:10px; z-index:1000; background-color:white; border:1px solid black; padding:15px; font-size:14px; width: 300px; height: 400px; overflow: auto;";
+
+    const closeButton = document.createElement("button");
+    closeButton.innerText = "Close";
+    closeButton.style.cssText = "position:absolute; top:5px; right:5px; background-color:red; color:white; border:none; padding:5px; cursor:pointer;";
+    closeButton.onclick = function() { document.body.removeChild(panel); };
+
+    const copyButton = document.createElement("button");
+    copyButton.innerText = "Copy to Clipboard";
+    copyButton.style.cssText = "margin-bottom: 10px; background-color: blue; color: white; border: none; padding: 5px; cursor: pointer;";
+    copyButton.onclick = function() {
+      const el = document.createElement("textarea");
+      el.value = emailList.join("\n");
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand("copy");
+      document.body.removeChild(el);
+      alert("Email addresses copied to clipboard!");
+    };
+
+    const emailListElement = document.createElement("div");
+    emailListElement.innerHTML = emailList.join("<br>");
+
+    panel.appendChild(closeButton);
+    panel.appendChild(copyButton);
+    panel.appendChild(emailListElement);
+
+    return panel;
+  }
+
+  const pageContent = document.body.innerText;
+  const emails = extractEmails(pageContent);
+  const uniqueEmails = uniqueArray(emails);
+
+  if (uniqueEmails.length > 0) {
+    const panel = createPanel(uniqueEmails);
+    document.body.appendChild(panel);
+  } else {
+    alert("No email addresses found on this page.");
+  }
+})();
