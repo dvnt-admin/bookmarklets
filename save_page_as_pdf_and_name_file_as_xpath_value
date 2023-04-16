@@ -1,0 +1,38 @@
+javascript:(function() {
+    function savePageAsPDF(filename) {
+        var element = document.documentElement;
+        var opt = {
+            margin: 0,
+            filename: filename + '.pdf',
+            image: { type: 'jpeg', quality: 1 },
+            html2canvas: { scale: 1 },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(element).save();
+    }
+
+    function getXPathValue(xpath) {
+        var iterator = document.evaluate(xpath, document, null, XPathResult.STRING_TYPE, null);
+        return iterator.stringValue;
+    }
+
+    function loadScript(url, callback) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = url;
+        script.onload = callback;
+        document.head.appendChild(script);
+    }
+
+    var xpath = "//*[@id='main-container']/div[2]/div[2]/div/div/div[1]/div/div[2]/div/div/div[1]/div[2]";
+    var filename = getXPathValue(xpath);
+
+    if (typeof html2pdf === 'undefined') {
+        loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js', function() {
+            savePageAsPDF(filename);
+        });
+    } else {
+        savePageAsPDF(filename);
+    }
+})();
